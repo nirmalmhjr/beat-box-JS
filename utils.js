@@ -1,74 +1,77 @@
 /**
- * Beat class that keeps track of playing the audio
- * HINT: Make sure to pass in the audioSrc as parameter to create a new audio track
- * HINT: Create a play function to play the audio if called 
+ * Beat — wraps one audio file.
  */
 class Beat {
-    constructor(audioSrc){
-    this.audio = new Audio(audioSrc)
-    // console.log(this.audio)
-    // this.audio.play()
-    
+    constructor(audioSrc) {
+        this.audio = new Audio(audioSrc);
+        this.audio.preload = "auto";
     }
-    play = ()=>{
+
+    play = () => {
         this.audio.currentTime = 0;
-        this.audio.play();
+        // play() returns a promise that rejects if the browser blocks audio
+        this.audio.play().catch(() => {});
     }
 
-    
-}   
+    stop = () => {
+        this.audio.pause();
+        this.audio.currentTime = 0;
+    }
 
+    setVolume = (volume, muted) => {
+        this.audio.volume = volume;
+        this.audio.muted = muted;
+    }
 
+    get isPlaying() {
+        return !this.audio.paused && !this.audio.ended;
+    }
+
+    get progress() {
+        const { currentTime, duration } = this.audio;
+        return duration ? currentTime / duration : 0;
+    }
+}
 
 /**
- * Button class that keeps track of the button color based on a press
+ * Button — the on-screen pad that belongs to one key.
  */
 class Button {
-    constructor(color, keyCode){
-        this.color = color;
-        this.keyCode = keyCode;
-
-        this.element = document.getElementById(keyCode);
-        // console.log(this.element)
-        this.setButtonColorInHTML();
-        
-        this.setTransitionEndListener()
-        
-        
-        
+    constructor(key) {
+        this.element = document.querySelector(`.pad[data-key="${key}"]`);
+        this.key = key;
+        this.name = this.element.dataset.name;
+        this.type = this.element.dataset.type;
+        this.createAnimationEndListener();
     }
 
-    //solution 1 : remove the style on keyup
-    //solution 2 : wait a certain amount of time to remove the transtition
-    //solution 3 : React on transtion event
-    setTransitionEndListener = () =>{
-        this.element.addEventListener('transitionend',() =>{
-          this.deselect ()
-        }) 
-    }
-    
-
-    /**
-     * Set the button color based on color specified
-     */
-    setButtonColorInHTML = () => {
-        this.element.style.borderColor = this.color;
+    createAnimationEndListener = () => {
+        this.element.addEventListener("animationend", (event) => {
+            if (event.animationName === "pad-hit") this.deselect();
+        });
     }
 
-    /**
-     * Select function to set the background color and boxShadow
-     */
+    // Flash the pad. Removing and re-adding the class restarts the
+    // animation, so fast repeated hits each get their own flash.
     select = () => {
-        this.element.style.backgroundColor = this.color;
-        this.element.style.boxShadow = `0px 0px 17px 0px ${this.color}`
+        this.element.classList.remove("is-hit");
+        void this.element.offsetWidth;
+        this.element.classList.add("is-hit");
     }
-        
 
-    /**
-     * Deselect function to reset background color and boxShadow
-     */
     deselect = () => {
-        this.element.style.backgroundColor = 'transparent'
-        this.element.style.boxShadow =  'none'
+        this.element.classList.remove("is-hit");
+    }
+
+    // Held-down state while a key or pointer is pressed
+    press = () => this.element.classList.add("is-pressed");
+    release = () => this.element.classList.remove("is-pressed");
+
+    setPlaying = (isPlaying) => {
+        this.element.classList.toggle("is-playing", isPlaying);
+    }
+
+    setProgress = (ratio) => {
+        this.element.style.setProperty("--progress", ratio);
     }
 }

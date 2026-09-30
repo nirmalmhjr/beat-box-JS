@@ -1,45 +1,76 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>BeatBoxJS</title>
-    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BeatBox JS</title>
+    <meta name="description" content="A keyboard-driven drum pad built with vanilla JavaScript. Press A–L to play.">
+    <meta name="theme-color" content="#0b0b12">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="beatbox">
-            <div class="beat">
-                <div id="65" class="button">A</div>
+    <main class="app">
+        <header class="header">
+            <h1 class="logo">BeatBox<span class="logo__tag">JS</span></h1>
+            <p class="hint">Press <kbd>A</kbd>–<kbd>L</kbd> to play, or tap a pad</p>
+        </header>
+
+        <section class="console" aria-label="Drum pad">
+            <!-- Now playing display -->
+            <div class="display" id="display">
+                <div class="display__key" id="displayKey" aria-hidden="true">—</div>
+                <div class="display__info">
+                    <span class="display__label">Now playing</span>
+                    <span class="display__name" id="displayName" aria-live="polite">Hit a key to start</span>
+                    <span class="display__type" id="displayType">9 sounds · drums, hats &amp; chords in A minor</span>
+                </div>
+                <div class="display__status">
+                    <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                    <span class="display__count" id="displayCount">Ready</span>
+                </div>
             </div>
-            <div class="beat">
-                <div id="83" class="button">S</div>
+
+            <!-- Pads: A → L, one per keyboard key -->
+            <div class="beatbox" id="beatbox">
+                <!-- script.js creates the pads from its SOUNDS list -->
             </div>
-            <div class="beat">
-                <div id="68" class="button">D</div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="volume">
+                    <button class="icon-btn" id="muteBtn" type="button" aria-pressed="false" aria-label="Mute" title="Mute (M)">
+                        <svg class="icon icon--on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="stroke" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+                        <svg class="icon icon--off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="stroke" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+                    </button>
+                    <label class="sr-only" for="volume">Volume</label>
+                    <input class="volume__slider" id="volume" type="range" min="0" max="100" value="80">
+                    <output class="volume__value" id="volumeValue" for="volume">80%</output>
+                </div>
+
+                <ul class="legend" aria-label="Sound groups">
+                    <li class="legend__item legend__item--drums">Drums</li>
+                    <li class="legend__item legend__item--hats">Hats</li>
+                    <li class="legend__item legend__item--chords">Chords</li>
+                </ul>
+
+                <button class="btn" id="stopBtn" type="button" title="Stop all sounds (Esc)">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                    Stop all
+                </button>
             </div>
-            <div class="beat">
-                <div id="70" class="button">F</div>
-            </div>
-            <div class="beat">
-                <div id="71" class="button">G</div>
-            </div>
-            <div class="beat">
-                <div id="72" class="button">H</div>
-            </div>
-            <div class="beat">
-                <div id="74" class="button">J</div>
-            </div>
-            <div class="beat">
-                <div id="75" class="button">K</div>
-            </div>
-            <div class="beat">
-                <div id="76" class="button">L</div>
-            </div>
-        </div>
-    </div>
+        </section>
+
+        <footer class="footer">
+            <span><kbd>A</kbd>–<kbd>L</kbd> play</span>
+            <span><kbd>M</kbd> mute</span>
+            <span><kbd>Esc</kbd> stop all</span>
+        </footer>
+    </main>
+
     <script src="./utils.js"></script>
-    <script src="./script.js" ></script>
+    <script src="./script.js"></script>
 </body>
 </html>
